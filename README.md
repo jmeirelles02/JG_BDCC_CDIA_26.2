@@ -62,19 +62,20 @@ não é necessário cadastrar `DJANGO_SECRET_KEY`.
 
 ### Criar o administrador sem SSH
 
-No console **Elastic Beanstalk → ambiente → Configuração → Atualizações, monitoramento e registro → Editar → Propriedades do ambiente**, cadastre as três variáveis antes de enviar o novo ZIP:
+No console **Elastic Beanstalk → ambiente → Configuração → Atualizações, monitoramento e registro → Editar → Propriedades do ambiente**, cadastre as duas variáveis antes de enviar o novo ZIP:
 
 | Variável | Valor |
 | --- | --- |
 | `DJANGO_SUPERUSER_USERNAME` | `adminJG` |
-| `DJANGO_SUPERUSER_EMAIL` | Seu e-mail |
 | `DJANGO_SUPERUSER_PASSWORD` | Uma senha forte escolhida por você |
 
 Não coloque a senha no código, README ou ZIP. Aguarde a aplicação das propriedades e envie o `app.zip` atualizado pelo console. Durante esse deploy, `bootstrap_admin` cria o usuário depois das migrações, diretamente no banco do servidor. Depois, acesse [Django Admin](http://lavourainteligentejg-env.eba-sqdkuvwv.us-east-1.elasticbeanstalk.com/admin/) com `adminJG` e a senha configurada.
 
-Se o usuário já existir, o comando preserva a conta e a senha; mudar a variável não redefine a senha existente. Sem nenhuma das três variáveis, a criação é ignorada. Para uma conta nova, configuração incompleta ou credenciais inválidas interrompem o deploy com uma mensagem sem expor a senha.
+O e-mail não é obrigatório. Omita ou remova `DJANGO_SUPERUSER_EMAIL` para criar a conta com e-mail vazio.
 
-O banco local não vai no ZIP. O SQLite é criado na AWS e pode ser perdido em novos deploys ou substituições da instância. Manter as três variáveis permite recriar o administrador quando o banco for criado novamente. Se remover as três após o cadastro, será necessário configurá-las novamente para recriar a conta em um banco novo.
+Se o usuário já existir, o comando preserva a conta e a senha; mudar a variável não redefine a senha existente. Sem nenhuma variável de criação, a criação é ignorada. Para uma conta nova, configuração incompleta ou credenciais inválidas interrompem o deploy com uma mensagem sem expor a senha.
+
+O banco local não vai no ZIP. O SQLite é criado na AWS e pode ser perdido em novos deploys ou substituições da instância. Manter as duas variáveis permite recriar o administrador quando o banco for criado novamente. Se remover as variáveis de criação após o cadastro, será necessário configurar usuário e senha novamente para recriar a conta em um banco novo.
 
 Referências: [propriedades do ambiente Beanstalk](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/environments-cfg-softwaresettings.html) e [validação de senhas Django](https://docs.djangoproject.com/en/6.0/topics/auth/passwords/#password-validation).
 As etapas completas estão na documentação AP1 vinculada acima.

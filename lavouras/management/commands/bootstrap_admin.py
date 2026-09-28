@@ -34,15 +34,16 @@ class Command(BaseCommand):
 
             email = values[names[1]].strip()
             password = values[names[2]]
-            if not email or not password:
+            if not password:
                 raise CommandError(
-                    "Defina DJANGO_SUPERUSER_EMAIL e DJANGO_SUPERUSER_PASSWORD "
+                    "Defina DJANGO_SUPERUSER_PASSWORD "
                     "para criar o administrador."
                 )
             user = User(username=username, email=email, is_staff=True, is_superuser=True)
             try:
                 user.full_clean(exclude=["password"])
-                validate_email(email)
+                if email:
+                    validate_email(email)
                 validate_password(password, user=user)
             except ValidationError:
                 # Não incluir valores das variáveis nem a senha nos logs do deploy.

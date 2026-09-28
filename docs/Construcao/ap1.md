@@ -140,11 +140,11 @@ Referências oficiais: [configuração da EB CLI](https://docs.aws.amazon.com/el
 
 ## 8. Configuração antes do deploy
 
-Selecione Python 3.12 no Beanstalk. Não é necessário cadastrar `DJANGO_SECRET_KEY`. Para criar o administrador sem SSH, cadastre `DJANGO_SUPERUSER_USERNAME=adminJG`, `DJANGO_SUPERUSER_EMAIL` com seu e-mail e `DJANGO_SUPERUSER_PASSWORD` com uma senha forte nas propriedades do ambiente antes de enviar o ZIP atualizado.
+Selecione Python 3.12 no Beanstalk. Não é necessário cadastrar `DJANGO_SECRET_KEY`. Para criar o administrador sem SSH, cadastre `DJANGO_SUPERUSER_USERNAME=adminJG` e `DJANGO_SUPERUSER_PASSWORD` com uma senha forte nas propriedades do ambiente antes de enviar o ZIP atualizado. O e-mail é opcional: omita ou remova `DJANGO_SUPERUSER_EMAIL` para criar a conta com e-mail vazio.
 
 `DJANGO_DEBUG=False` já está definido em django.config. O primeiro comando do deploy gera uma chave aleatória em `/var/app/django-secrets/secret-key`, com permissões 600, em uma pasta com permissões 700, pertencente a `webapp`. Esse arquivo fica fora do código e do ZIP. Novos deploys na mesma instância reutilizam a chave existente. O Django lê esse arquivo quando DEBUG é False; a variável `DJANGO_SECRET_KEY` continua como alternativa opcional.
 
-No console, abra **Elastic Beanstalk → ambiente → Configuração → Atualizações, monitoramento e registro → Editar → Propriedades do ambiente**. Adicione as três variáveis, aplique e aguarde a atualização. A criação automática usa as propriedades do ambiente e não precisa de par de chaves EC2.
+No console, abra **Elastic Beanstalk → ambiente → Configuração → Atualizações, monitoramento e registro → Editar → Propriedades do ambiente**. Adicione as duas variáveis, aplique e aguarde a atualização. A criação automática usa as propriedades do ambiente e não precisa de par de chaves EC2.
 
 `DJANGO_ALLOWED_HOSTS` é opcional: por padrão aceita localhost e domínios `.elasticbeanstalk.com`. Para um domínio próprio, acrescente o hostname. `DJANGO_CSRF_TRUSTED_ORIGINS` pode receber a URL completa caso seja necessário usar um domínio ou origem adicional.
 
@@ -173,11 +173,11 @@ Antes desses comandos, o deploy gera ou reutiliza a chave privada descrita na se
 
 Todos os comandos seguem a ordem numérica, sem `leader_only`, pois o ambiente usa SingleInstance. No Beanstalk, comandos com `leader_only` seriam executados antes dos demais, mesmo quando seu nome tem número posterior; isso faria a migração preceder a criação da chave. Os comandos Python ativam explicitamente `/var/app/venv/*/bin/activate` antes de executar. Referência: [ordem dos container commands](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/customize-containers-ec2.html#linux-container-commands).
 
-Depois do deploy, acesse `http://ENDERECO-DO-BEANSTALK/admin/` com o usuário `adminJG` e a senha definida nas propriedades do ambiente. O usuário só estará disponível após um deploy bem-sucedido com as três variáveis configuradas.
+Depois do deploy, acesse `http://ENDERECO-DO-BEANSTALK/admin/` com o usuário `adminJG` e a senha definida nas propriedades do ambiente. O usuário só estará disponível após um deploy bem-sucedido com usuário e senha configurados.
 
-O comando preserva qualquer usuário existente com o mesmo nome, sem alterar senha ou permissões. Sem nenhuma das três variáveis, ignora a criação. Se precisar criar uma conta, exige usuário válido, e-mail válido e senha aprovada pelos validadores do Django; erros interrompem o deploy sem registrar os valores das credenciais. Alterar a variável de senha não redefine a senha de uma conta existente.
+O comando preserva qualquer usuário existente com o mesmo nome, sem alterar senha ou permissões. Sem nenhuma variável de criação, ignora a criação. Se precisar criar uma conta, exige usuário válido e senha aprovada pelos validadores do Django; o e-mail é validado somente se informado. Erros interrompem o deploy sem registrar os valores das credenciais. Alterar a variável de senha não redefine a senha de uma conta existente.
 
-O protótipo está configurado como SingleInstance. O SQLite permanece no disco da instância e pode ser perdido em substituições ou novos deployments. Manter as três variáveis permite recriar o administrador em um banco novo. Se remover as três após o cadastro, será necessário cadastrá-las novamente quando precisar recriar a conta. A chave interna do Django também é recriada se a instância for substituída. O ZIP não contém banco nem credenciais locais.
+O protótipo está configurado como SingleInstance. O SQLite permanece no disco da instância e pode ser perdido em substituições ou novos deployments. Manter as duas variáveis permite recriar o administrador em um banco novo. Se remover as variáveis de criação após o cadastro, será necessário configurar usuário e senha novamente quando precisar recriar a conta. A chave interna do Django também é recriada se a instância for substituída. O ZIP não contém banco nem credenciais locais.
 
 Referências: [propriedades do ambiente Beanstalk](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/environments-cfg-softwaresettings.html) e [validação de senhas Django](https://docs.djangoproject.com/en/6.0/topics/auth/passwords/#password-validation).
 
