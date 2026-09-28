@@ -77,6 +77,5 @@ node_modules/
 db.sqlite3
 db.sqlite3-*
 app.zip
-app-admin.zip
 *.manual.bak
 staticfiles/

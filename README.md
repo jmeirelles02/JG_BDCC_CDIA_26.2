@@ -32,7 +32,7 @@ A API Django usa o projeto `lavouraInteligente_JG` e o app `lavouras`, com as cl
 - Incluídos `Procfile`, configurações de deploy e `empacotar.py` para gerar o pacote `app.zip`.
 - [Etapas de implementação, migrações, Admin e deploy](docs/Construcao/ap1.md)
 - Endpoints: `/api/talhoes/` e `/api/lotes/`.
-- Admin: `/admin/`; usuário previsto para o deploy: `dtdev1`, criado quando as variáveis abaixo estiverem configuradas. A senha é definida no Beanstalk e não é publicada no GitHub.
+- Admin: `/admin/`; usuário previsto para o deploy: `adminJG`, criado quando as variáveis abaixo estiverem configuradas. A senha é definida no Beanstalk e não é publicada no GitHub.
 - API publicada: [http://lavourainteligentejg-env.eba-sqdkuvwv.us-east-1.elasticbeanstalk.com/](http://lavourainteligentejg-env.eba-sqdkuvwv.us-east-1.elasticbeanstalk.com/)
 - Base da API: [http://lavourainteligentejg-env.eba-sqdkuvwv.us-east-1.elasticbeanstalk.com/api/](http://lavourainteligentejg-env.eba-sqdkuvwv.us-east-1.elasticbeanstalk.com/api/)
 
@@ -66,11 +66,11 @@ No console **Elastic Beanstalk → ambiente → Configuração → Atualizaçõe
 
 | Variável | Valor |
 | --- | --- |
-| `DJANGO_SUPERUSER_USERNAME` | `dtdev1` |
+| `DJANGO_SUPERUSER_USERNAME` | `adminJG` |
 | `DJANGO_SUPERUSER_EMAIL` | Seu e-mail |
 | `DJANGO_SUPERUSER_PASSWORD` | Uma senha forte escolhida por você |
 
-Não coloque a senha no código, README ou ZIP. Aguarde a aplicação das propriedades e envie o `app.zip` atualizado pelo console. Durante esse deploy, `bootstrap_admin` cria o usuário depois das migrações, diretamente no banco do servidor. Depois, acesse [Django Admin](http://lavourainteligentejg-env.eba-sqdkuvwv.us-east-1.elasticbeanstalk.com/admin/) com `dtdev1` e a senha configurada.
+Não coloque a senha no código, README ou ZIP. Aguarde a aplicação das propriedades e envie o `app.zip` atualizado pelo console. Durante esse deploy, `bootstrap_admin` cria o usuário depois das migrações, diretamente no banco do servidor. Depois, acesse [Django Admin](http://lavourainteligentejg-env.eba-sqdkuvwv.us-east-1.elasticbeanstalk.com/admin/) com `adminJG` e a senha configurada.
 
 Se o usuário já existir, o comando preserva a conta e a senha; mudar a variável não redefine a senha existente. Sem nenhuma das três variáveis, a criação é ignorada. Para uma conta nova, configuração incompleta ou credenciais inválidas interrompem o deploy com uma mensagem sem expor a senha.
 

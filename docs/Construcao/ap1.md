@@ -140,7 +140,7 @@ Referências oficiais: [configuração da EB CLI](https://docs.aws.amazon.com/el
 
 ## 8. Configuração antes do deploy
 
-Selecione Python 3.12 no Beanstalk. Não é necessário cadastrar `DJANGO_SECRET_KEY`. Para criar o administrador sem SSH, cadastre `DJANGO_SUPERUSER_USERNAME=dtdev1`, `DJANGO_SUPERUSER_EMAIL` com seu e-mail e `DJANGO_SUPERUSER_PASSWORD` com uma senha forte nas propriedades do ambiente antes de enviar o ZIP atualizado.
+Selecione Python 3.12 no Beanstalk. Não é necessário cadastrar `DJANGO_SECRET_KEY`. Para criar o administrador sem SSH, cadastre `DJANGO_SUPERUSER_USERNAME=adminJG`, `DJANGO_SUPERUSER_EMAIL` com seu e-mail e `DJANGO_SUPERUSER_PASSWORD` com uma senha forte nas propriedades do ambiente antes de enviar o ZIP atualizado.
 
 `DJANGO_DEBUG=False` já está definido em django.config. O primeiro comando do deploy gera uma chave aleatória em `/var/app/django-secrets/secret-key`, com permissões 600, em uma pasta com permissões 700, pertencente a `webapp`. Esse arquivo fica fora do código e do ZIP. Novos deploys na mesma instância reutilizam a chave existente. O Django lê esse arquivo quando DEBUG é False; a variável `DJANGO_SECRET_KEY` continua como alternativa opcional.
 
@@ -173,7 +173,7 @@ Antes desses comandos, o deploy gera ou reutiliza a chave privada descrita na se
 
 Todos os comandos seguem a ordem numérica, sem `leader_only`, pois o ambiente usa SingleInstance. No Beanstalk, comandos com `leader_only` seriam executados antes dos demais, mesmo quando seu nome tem número posterior; isso faria a migração preceder a criação da chave. Os comandos Python ativam explicitamente `/var/app/venv/*/bin/activate` antes de executar. Referência: [ordem dos container commands](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/customize-containers-ec2.html#linux-container-commands).
 
-Depois do deploy, acesse `http://ENDERECO-DO-BEANSTALK/admin/` com o usuário `dtdev1` e a senha definida nas propriedades do ambiente. O usuário só estará disponível após um deploy bem-sucedido com as três variáveis configuradas.
+Depois do deploy, acesse `http://ENDERECO-DO-BEANSTALK/admin/` com o usuário `adminJG` e a senha definida nas propriedades do ambiente. O usuário só estará disponível após um deploy bem-sucedido com as três variáveis configuradas.
 
 O comando preserva qualquer usuário existente com o mesmo nome, sem alterar senha ou permissões. Sem nenhuma das três variáveis, ignora a criação. Se precisar criar uma conta, exige usuário válido, e-mail válido e senha aprovada pelos validadores do Django; erros interrompem o deploy sem registrar os valores das credenciais. Alterar a variável de senha não redefine a senha de uma conta existente.
 
