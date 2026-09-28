@@ -1,5 +1,14 @@
 # Lavoura Inteligente — Plataforma de Telemetria Agrícola
 
+# DJANGO ADMIN
+
+USER: adminJG
+PASSWORD: 1234admin
+
+
+
+
+
 ## Sobre
 
 A proposta da Lavoura Inteligente recebe leituras de sensores agrícolas, avalia
@@ -64,9 +73,9 @@ não é necessário cadastrar `DJANGO_SECRET_KEY`.
 
 No console **Elastic Beanstalk → ambiente → Configuração → Atualizações, monitoramento e registro → Editar → Propriedades do ambiente**, cadastre as duas variáveis antes de enviar o novo ZIP:
 
-| Variável | Valor |
-| --- | --- |
-| `DJANGO_SUPERUSER_USERNAME` | `adminJG` |
+| Variável                     | Valor                               |
+| ----------------------------- | ----------------------------------- |
+| `DJANGO_SUPERUSER_USERNAME` | `adminJG`                         |
 | `DJANGO_SUPERUSER_PASSWORD` | Uma senha forte escolhida por você |
 
 Não coloque a senha no código, README ou ZIP. Aguarde a aplicação das propriedades e envie o `app.zip` atualizado pelo console. Durante esse deploy, `bootstrap_admin` cria o usuário depois das migrações, diretamente no banco do servidor. Depois, acesse [Django Admin](http://lavourainteligentejg-env.eba-sqdkuvwv.us-east-1.elasticbeanstalk.com/admin/) com `adminJG` e a senha configurada.
