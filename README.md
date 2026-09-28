@@ -32,7 +32,7 @@ A API Django usa o projeto `lavouraInteligente_JG` e o app `lavouras`, com as cl
 - Incluídos `Procfile`, configurações de deploy e `empacotar.py` para gerar o pacote `app.zip`.
 - [Etapas de implementação, migrações, Admin e deploy](docs/Construcao/ap1.md)
 - Endpoints: `/api/talhoes/` e `/api/lotes/`.
-- Admin: `/admin/`; usuário local `dtdev1`, com a senha definida durante a configuração.
+- Admin: `/admin/`; usuário previsto para o deploy: `dtdev1`, criado quando as variáveis abaixo estiverem configuradas. A senha é definida no Beanstalk e não é publicada no GitHub.
 - API publicada: [http://lavourainteligentejg-env.eba-sqdkuvwv.us-east-1.elasticbeanstalk.com/](http://lavourainteligentejg-env.eba-sqdkuvwv.us-east-1.elasticbeanstalk.com/)
 - Base da API: [http://lavourainteligentejg-env.eba-sqdkuvwv.us-east-1.elasticbeanstalk.com/api/](http://lavourainteligentejg-env.eba-sqdkuvwv.us-east-1.elasticbeanstalk.com/api/)
 
@@ -58,15 +58,23 @@ O pacote para upload é `app.zip`, gerado com `.\.venv\Scripts\python.exe empaco
 A aplicação Beanstalk foi configurada como `lavouraInteligente_JG`, com ambiente
 `lavouraInteligente-JG-env`. Selecione a plataforma Python 3.12. A chave interna
 do Django é gerada automaticamente em um arquivo privado no servidor;
-não é necessário cadastrar chaves ou senhas nas propriedades do ambiente.
-O banco local não vai no ZIP. Depois do deploy, crie o administrador por SSH:
+não é necessário cadastrar `DJANGO_SECRET_KEY`.
 
-```bash
-cd /var/app/current
-source /var/app/venv/*/bin/activate
-sudo -u webapp env DJANGO_DEBUG=False "$(which python)" manage.py createsuperuser --username dtdev1
-```
+### Criar o administrador sem SSH
 
-Informe o e-mail e a senha nos prompts, depois acesse `/admin/` na URL publicada.
-O acesso SSH precisa estar configurado na instância. As etapas completas estão
-na documentação AP1 vinculada acima.
+No console **Elastic Beanstalk → ambiente → Configuração → Atualizações, monitoramento e registro → Editar → Propriedades do ambiente**, cadastre as três variáveis antes de enviar o novo ZIP:
+
+| Variável | Valor |
+| --- | --- |
+| `DJANGO_SUPERUSER_USERNAME` | `dtdev1` |
+| `DJANGO_SUPERUSER_EMAIL` | Seu e-mail |
+| `DJANGO_SUPERUSER_PASSWORD` | Uma senha forte escolhida por você |
+
+Não coloque a senha no código, README ou ZIP. Aguarde a aplicação das propriedades e envie o `app.zip` atualizado pelo console. Durante esse deploy, `bootstrap_admin` cria o usuário depois das migrações, diretamente no banco do servidor. Depois, acesse [Django Admin](http://lavourainteligentejg-env.eba-sqdkuvwv.us-east-1.elasticbeanstalk.com/admin/) com `dtdev1` e a senha configurada.
+
+Se o usuário já existir, o comando preserva a conta e a senha; mudar a variável não redefine a senha existente. Sem nenhuma das três variáveis, a criação é ignorada. Para uma conta nova, configuração incompleta ou credenciais inválidas interrompem o deploy com uma mensagem sem expor a senha.
+
+O banco local não vai no ZIP. O SQLite é criado na AWS e pode ser perdido em novos deploys ou substituições da instância. Manter as três variáveis permite recriar o administrador quando o banco for criado novamente. Se remover as três após o cadastro, será necessário configurá-las novamente para recriar a conta em um banco novo.
+
+Referências: [propriedades do ambiente Beanstalk](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/environments-cfg-softwaresettings.html) e [validação de senhas Django](https://docs.djangoproject.com/en/6.0/topics/auth/passwords/#password-validation).
+As etapas completas estão na documentação AP1 vinculada acima.

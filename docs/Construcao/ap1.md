@@ -27,7 +27,7 @@ Um talhão pode possuir vários lotes. Cada lote referencia exatamente um talhã
 - `lavouras/admin.py`: registra os modelos no Admin.
 - `lavouras/apps.py`: configura `LavourasConfig`.
 - `lavouras/migrations/0001_initial.py`: migração gerada pelo comando do Django.
-- A criação automática do administrador foi retirada; a conta AWS será criada por `createsuperuser` via SSH.
+- `lavouras/management/commands/bootstrap_admin.py`: cria o administrador no deploy por variáveis de ambiente, sem SSH, preservando contas existentes.
 - `Procfile`, `.ebextensions/django.config` e `.elasticbeanstalk/config.yml`: apontam para os novos nomes.
 - `requirements.txt`: dependências do servidor Django; `requirements-docs.txt`: dependências da documentação.
 - O workflow MkDocs instala `requirements-docs.txt`.
@@ -140,11 +140,11 @@ Referências oficiais: [configuração da EB CLI](https://docs.aws.amazon.com/el
 
 ## 8. Configuração antes do deploy
 
-Selecione Python 3.12 no Beanstalk. Não é necessário cadastrar `DJANGO_SECRET_KEY` ou `DJANGO_SUPERUSER_PASSWORD` no console.
+Selecione Python 3.12 no Beanstalk. Não é necessário cadastrar `DJANGO_SECRET_KEY`. Para criar o administrador sem SSH, cadastre `DJANGO_SUPERUSER_USERNAME=dtdev1`, `DJANGO_SUPERUSER_EMAIL` com seu e-mail e `DJANGO_SUPERUSER_PASSWORD` com uma senha forte nas propriedades do ambiente antes de enviar o ZIP atualizado.
 
 `DJANGO_DEBUG=False` já está definido em django.config. O primeiro comando do deploy gera uma chave aleatória em `/var/app/django-secrets/secret-key`, com permissões 600, em uma pasta com permissões 700, pertencente a `webapp`. Esse arquivo fica fora do código e do ZIP. Novos deploys na mesma instância reutilizam a chave existente. O Django lê esse arquivo quando DEBUG é False; a variável `DJANGO_SECRET_KEY` continua como alternativa opcional.
 
-Configure um par de chaves EC2 e o acesso SSH à instância antes de criar o administrador. Isso é o acesso ao terminal do servidor, separado das configurações internas do Django. Se usar a EB CLI, `eb init` permite configurar SSH; conecte com `eb ssh lavouraInteligente-JG-env`. Também é possível usar um cliente SSH com o par de chaves e o endereço da instância, conforme a configuração AWS.
+No console, abra **Elastic Beanstalk → ambiente → Configuração → Atualizações, monitoramento e registro → Editar → Propriedades do ambiente**. Adicione as três variáveis, aplique e aguarde a atualização. A criação automática usa as propriedades do ambiente e não precisa de par de chaves EC2.
 
 `DJANGO_ALLOWED_HOSTS` é opcional: por padrão aceita localhost e domínios `.elasticbeanstalk.com`. Para um domínio próprio, acrescente o hostname. `DJANGO_CSRF_TRUSTED_ORIGINS` pode receber a URL completa caso seja necessário usar um domínio ou origem adicional.
 
@@ -165,28 +165,21 @@ São excluídos banco local, ambiente virtual, caches, backups, documentação e
 Durante o deploy, django.config executa:
 
 1. `migrate --noinput`;
-2. `collectstatic --noinput`;
-3. ajuste das permissões do SQLite para o usuário da aplicação.
+2. `bootstrap_admin`, que cria a conta administrativa quando configurada;
+3. `collectstatic --noinput`;
+4. ajuste das permissões do SQLite para o usuário da aplicação.
 
 Antes desses comandos, o deploy gera ou reutiliza a chave privada descrita na seção 8.
 
 Todos os comandos seguem a ordem numérica, sem `leader_only`, pois o ambiente usa SingleInstance. No Beanstalk, comandos com `leader_only` seriam executados antes dos demais, mesmo quando seu nome tem número posterior; isso faria a migração preceder a criação da chave. Os comandos Python ativam explicitamente `/var/app/venv/*/bin/activate` antes de executar. Referência: [ordem dos container commands](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/customize-containers-ec2.html#linux-container-commands).
 
-Depois do deploy, conectado por SSH à instância, execute:
+Depois do deploy, acesse `http://ENDERECO-DO-BEANSTALK/admin/` com o usuário `dtdev1` e a senha definida nas propriedades do ambiente. O usuário só estará disponível após um deploy bem-sucedido com as três variáveis configuradas.
 
-```bash
-cd /var/app/current
-source /var/app/venv/*/bin/activate
-sudo -u webapp env DJANGO_DEBUG=False "$(which python)" manage.py createsuperuser --username dtdev1
-```
+O comando preserva qualquer usuário existente com o mesmo nome, sem alterar senha ou permissões. Sem nenhuma das três variáveis, ignora a criação. Se precisar criar uma conta, exige usuário válido, e-mail válido e senha aprovada pelos validadores do Django; erros interrompem o deploy sem registrar os valores das credenciais. Alterar a variável de senha não redefine a senha de uma conta existente.
 
-Informe o e-mail e escolha a senha nos prompts. Ela não será exibida enquanto você digita. Se escolher uma senha que o Django considerar fraca, o comando pedirá confirmação. O comando usa o usuário Linux `webapp`, que pode escrever no banco, e DEBUG=False para carregar a mesma chave da aplicação publicada. Não execute esses comandos no PowerShell local: eles pertencem ao terminal Linux da instância AWS.
+O protótipo está configurado como SingleInstance. O SQLite permanece no disco da instância e pode ser perdido em substituições ou novos deployments. Manter as três variáveis permite recriar o administrador em um banco novo. Se remover as três após o cadastro, será necessário cadastrá-las novamente quando precisar recriar a conta. A chave interna do Django também é recriada se a instância for substituída. O ZIP não contém banco nem credenciais locais.
 
-Acesse `http://ENDERECO-DO-BEANSTALK/admin/` e faça login com a conta criada. Para redefinir a senha posteriormente, use o mesmo terminal e comando, substituindo `createsuperuser --username dtdev1` por `changepassword dtdev1`.
-
-Referências: [SSH no Beanstalk](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/eb3-ssh.html) e [criação de superusuários Django](https://docs.djangoproject.com/en/6.0/topics/auth/default/#creating-superusers).
-
-O protótipo está configurado como SingleInstance. O SQLite permanece no disco da instância e pode ser perdido em substituições ou novos deployments; nesse caso será necessário recriar o administrador. A chave privada também é perdida se a instância for substituída. O ZIP não contém o banco nem o usuário local; a conta AWS é criada separadamente por `createsuperuser`.
+Referências: [propriedades do ambiente Beanstalk](https://docs.aws.amazon.com/elasticbeanstalk/latest/dg/environments-cfg-softwaresettings.html) e [validação de senhas Django](https://docs.djangoproject.com/en/6.0/topics/auth/passwords/#password-validation).
 
 ## 10. Verificações e entrega
 
