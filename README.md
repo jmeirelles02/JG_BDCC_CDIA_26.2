@@ -9,6 +9,12 @@ PASSWORD: 1234admin
 
 
 
+## Integrantes
+
+- Joao Vitor Donda
+- Caique Rechuan
+- Joao Gabriel Meirelles
+
 ## Sobre
 
 A proposta da Lavoura Inteligente recebe leituras de sensores agrícolas, avalia
@@ -41,9 +47,13 @@ A API Django usa o projeto `lavouraInteligente_JG` e o app `lavouras`, com as cl
 - Incluídos `Procfile`, configurações de deploy e `empacotar.py` para gerar o pacote `app.zip`.
 - [Etapas de implementação, migrações, Admin e deploy](docs/Construcao/ap1.md)
 - Endpoints: `/api/talhoes/` e `/api/lotes/`.
-- Admin: `/admin/`; usuário previsto para o deploy: `adminJG`, criado quando as variáveis abaixo estiverem configuradas. A senha é definida no Beanstalk e não é publicada no GitHub.
+- Admin: `/admin/`; usuário `adminJG`. As credenciais de avaliação estão publicadas no início deste README por decisão do responsável pelo trabalho acadêmico.
 - API publicada: [http://lavourainteligentejg-env.eba-sqdkuvwv.us-east-1.elasticbeanstalk.com/](http://lavourainteligentejg-env.eba-sqdkuvwv.us-east-1.elasticbeanstalk.com/)
 - Base da API: [http://lavourainteligentejg-env.eba-sqdkuvwv.us-east-1.elasticbeanstalk.com/api/](http://lavourainteligentejg-env.eba-sqdkuvwv.us-east-1.elasticbeanstalk.com/api/)
+
+### Validação na AWS
+
+O deploy no Elastic Beanstalk foi concluído. Em 28/09/2026, o responsável pelo projeto confirmou o funcionamento da API em `/api/` e do Django Admin em `/admin/` no ambiente publicado. O professor `jonh-carvalho` está cadastrado como colaborador no GitHub.
 
 ### Executar localmente
 
@@ -78,7 +88,7 @@ No console **Elastic Beanstalk → ambiente → Configuração → Atualizaçõe
 | `DJANGO_SUPERUSER_USERNAME` | `adminJG`                         |
 | `DJANGO_SUPERUSER_PASSWORD` | Uma senha forte escolhida por você |
 
-Não coloque a senha no código, README ou ZIP. Aguarde a aplicação das propriedades e envie o `app.zip` atualizado pelo console. Durante esse deploy, `bootstrap_admin` cria o usuário depois das migrações, diretamente no banco do servidor. Depois, acesse [Django Admin](http://lavourainteligentejg-env.eba-sqdkuvwv.us-east-1.elasticbeanstalk.com/admin/) com `adminJG` e a senha configurada.
+Aguarde a aplicação das propriedades e envie o `app.zip` atualizado pelo console. Durante esse deploy, `bootstrap_admin` cria o usuário depois das migrações, diretamente no banco do servidor. Depois, acesse [Django Admin](http://lavourainteligentejg-env.eba-sqdkuvwv.us-east-1.elasticbeanstalk.com/admin/) com `adminJG` e a senha configurada. Para a avaliação acadêmica, as credenciais estão publicadas no início deste README por decisão do responsável; a configuração do deploy continua usando as propriedades do ambiente.
 
 O e-mail não é obrigatório. Omita ou remova `DJANGO_SUPERUSER_EMAIL` para criar a conta com e-mail vazio.
 

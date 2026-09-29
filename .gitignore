@@ -29,6 +29,7 @@ venv/
 ENV/
 env/
 .venv/
+.venv-docs/
 
 # IDE
 .vscode/
@@ -79,3 +80,7 @@ db.sqlite3-*
 app.zip
 *.manual.bak
 staticfiles/
+
+# Chaves privadas de acesso à AWS
+*.pem
+*.ppk

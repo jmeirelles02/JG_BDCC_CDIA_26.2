@@ -148,7 +148,7 @@ No console, abra **Elastic Beanstalk → ambiente → Configuração → Atualiz
 
 `DJANGO_ALLOWED_HOSTS` é opcional: por padrão aceita localhost e domínios `.elasticbeanstalk.com`. Para um domínio próprio, acrescente o hostname. `DJANGO_CSRF_TRUSTED_ORIGINS` pode receber a URL completa caso seja necessário usar um domínio ou origem adicional.
 
-Não grave a senha administrativa ou a chave secreta em arquivos versionados.
+As credenciais do administrador para avaliação acadêmica estão publicadas no README por decisão do responsável. O deploy lê a senha das propriedades do ambiente. A chave interna do Django e as chaves privadas SSH não fazem parte do código versionado nem do ZIP.
 
 ## 9. Empacotar e publicar
 
@@ -183,9 +183,9 @@ Referências: [propriedades do ambiente Beanstalk](https://docs.aws.amazon.com/e
 
 ## 10. Verificações e entrega
 
-Na conferência final, o app.zip foi extraído em pasta temporária e testado com banco vazio: migrações, collectstatic (incluindo CSS do Admin), importação WSGI, cadastro e consulta pela API, proteção do talhão com lote e login administrativo passaram. O teste usou DEBUG=False com o arquivo privado simulado, sem alterar o banco local. Também foram conferidos os 20 arquivos do ZIP contra as fontes, a ausência dos pacotes antigos, a ordem dos comandos YAML e `pip check`. O ambiente Linux e os serviços AWS ainda precisam ser validados após publicar.
+O deploy no AWS Elastic Beanstalk foi concluído. Em 28/09/2026, o responsável pelo projeto confirmou o funcionamento de `/api/` e `/admin/` na aplicação publicada. A [API](http://lavourainteligentejg-env.eba-sqdkuvwv.us-east-1.elasticbeanstalk.com/api/) e o [Django Admin](http://lavourainteligentejg-env.eba-sqdkuvwv.us-east-1.elasticbeanstalk.com/admin/) estão vinculados no README. O professor `jonh-carvalho` está cadastrado como colaborador no GitHub.
 
-Após a renomeação para `lavouraInteligente_JG`, foram conferidos: `manage.py check`, ausência de novas migrações e `[X] 0001_initial`; sintaxe YAML; integridade do ZIP de 20 arquivos, sem banco local e sem o antigo pacote; geração e reutilização da chave em arquivo temporário; importação WSGI com DEBUG=False e leitura do arquivo privado simulada. As URLs de API e o login Admin também foram verificados localmente. Os comandos Linux do deploy e do SSH ainda precisam ser confirmados na instância AWS.
+As verificações locais anteriores cobriram migrações, coleta dos arquivos estáticos do Admin, importação WSGI com DEBUG=False e leitura da chave interna simulada, cadastro e consulta pela API, integridade do relacionamento e login administrativo. O ZIP atualizado contém 21 arquivos, incluindo `bootstrap_admin`, sem banco local, chaves SSH ou testes. Os seis testes de criação do administrador passaram, incluindo login sem e-mail, repetição do deploy e preservação de contas existentes. O fluxo de criação do administrador não requer SSH.
 
 A verificação local cobre cadastro, consulta, edição e exclusão dos dois modelos, integridade do relacionamento, login e páginas administrativas, consistência das migrações e coleta dos arquivos estáticos. Os registros usados nos testes são revertidos ao final.
 
@@ -197,4 +197,4 @@ git add .
 
 Banco local, ZIP, ambiente virtual e arquivos estáticos gerados são ignorados pelo Git. Os integrantes já estão listados no README; confira os nomes antes de entregar.
 
-Ainda é necessário publicar na AWS, conferir o status do ambiente, testar as URLs publicadas, preencher o link real da API no README e adicionar o professor como colaborador. A validação local não representa um deploy AWS concluído.
+Publicação AWS, conferência das rotas pelo responsável, links da aplicação no README e cadastro do professor como colaborador foram concluídos. As verificações locais e a confirmação do responsável na AWS são registradas separadamente para indicar a origem de cada evidência.
